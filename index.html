@@ -1,63 +1,118 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Chatbot</title>
+
+<title>Lorenzo - Professional Dark Theme with Avatar</title>
 <style>
+  body.dimmed {
+    background-color: rgba(0, 0, 0, 0.6);
+    transition: background-color 0.5s ease;
+  }
   body {
-    font-family: sans-serif;
+    font-family: 'Nunito', sans-serif;
+    background: #121212;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #f0f0f0;
+    margin: 0;
+    color: #e0e0e0;
   }
-  
+
   #chat-container {
-    background-color: #fff;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    width: 400px;
+    background: #1e1e1e;
+    border-radius: 15px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5);
+    width: 90%;
+    max-width: 800px;
+    height: 70vh;
+    min-width: 300px;
+    min-height: 300px;
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    resize: both;
+    overflow: auto;
+    /* border: 1px solid #4CAF50; */
+    position: relative;
   }
-  
+
   h1 {
+    background-color: #333;
+    color: #ffffff;
+    margin: 0;
+    padding: 20px;
     text-align: center;
-    margin-bottom: 20px;
+    font-size: 1.5em;
   }
-  
+
   #chat-history {
-    height: 300px;
-    overflow-y: scroll;
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #181818;
   }
-  
+
+  .message {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .user-message, .bot-message {
+    padding: 15px;
+    border-radius: 10px;
+    max-width: 80%;
+    word-wrap: break-word;
+  }
+
   .user-message {
-    text-align: right;
-    padding: 10px;
-    background-color: #f0f0f0;
-    border-radius: 10px;
-    margin-bottom: 5px;
+    align-self: flex-end;
+    background-color: #4CAF50;
+    color: #ffffff;
   }
-  
+
   .bot-message {
-    text-align: left;
-    padding: 10px;
-    background-color: #e0f0e0;
-    border-radius: 10px;
-    margin-bottom: 5px;
+    align-self: flex-start;
+    background-color: #333;
+    color: #e0e0e0;
   }
-  
+
+  .bot-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+
+
   form {
     display: flex;
+    border-top: 1px solid #333;
+    padding: 15px;
+    background-color: #1e1e1e;
+    margin: 0 10px;
   }
-  
+
   input {
     flex-grow: 1;
-    margin-right: 10px;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #444;
     border-radius: 5px;
+    outline: none;
+    font-size: 1em;
+    background-color: #333;
+    color: #e0e0e0;
+    margin-right: 10px;
   }
-  
+
   button {
     background-color: #4CAF50;
     color: white;
@@ -65,70 +120,120 @@
     padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
+    margin-left: 10px;
+    transition: background-color 0.3s ease;
   }
+
+  button:hover {
+    background-color: #45a049;
+  }
+
   #loader {
-  display: none; /* Hide by default */
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-  </style>
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+#chat-container::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, transparent, #4CAF50);
+    cursor: se-resize;
+  }
+#chat-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 2;
+  }
+</style>
 </head>
+
 <body>
-  <div id="chat-container">
-  <h1>Coding Money Chatbot</h1>
+<div id="chat-container">
+  <div id="chat-overlay"></div>
+  <h1 style="font-family: 'Poppins', sans-serif;">Lorenzo</h1>
+  <h2 style="font-family: 'Poppins', sans-serif; font-size: 1em; font-weight: 300; color: #aaaaaa; text-align: center; margin: 0; padding-bottom: 20px;">AI-Career Assistant</h2>
   <div id="chat-history"></div>
   <form id="chat-form">
-    <input type="text" id="user-input" placeholder="Enter your message">
+    <input type="text" id="user-input" placeholder="Type your message here...">
     <button type="submit">Send</button>
   </form>
 </div>
-<div id="loader">
-  <img src="loader.gif" width="150px" alt="Loading...">
+<div id="loader" style="z-index: 3;">
+  <img src="loader.gif" width="100px" alt="Loading...">
 </div>
-  <script>
-    const chatHistory = document.getElementById('chat-history');
-    const userInput = document.getElementById('user-input');
-    const form = document.getElementById('chat-form');
+<script>
+  const chatHistory = document.getElementById('chat-history');
+  const userInput = document.getElementById('user-input');
+  const form = document.getElementById('chat-form');
 
-    async function sendMessage() {
-      const userMessage = userInput.value;
-      userInput.value = ''; // Clear input field
-      console.log(userMessage)
-      try {
-        const response = await fetch('/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ userInput: userMessage }),
-        });
+  let isProcessing = false;
 
-        const data = await response.json();
-        console.log(data)
-        const botMessage = data.response;
-        console.log(botMessage)
-        // Add chat message to the chat history
-        chatHistory.innerHTML += `<div class="user-message">${userMessage}</div>`;
-        chatHistory.innerHTML += `<div class="bot-message">${botMessage}</div>`;
+  async function sendMessage() {
+    if (isProcessing) return;
+    isProcessing = true;
+    document.getElementById('chat-overlay').style.display = 'block'; // Fade to darker background
+    const userMessage = userInput.value;
+    userInput.value = ''; // Clear input field
 
-        // Scroll to the bottom of the chat history
-        chatHistory.scrollTop = chatHistory.scrollHeight;
-      } catch (error) {
-        console.error('Error:', error);
-        // Handle errors gracefully, e.g., display an error message to the user
-      }
+    // Add user's message to chat history
+    chatHistory.innerHTML += `<div class="message"><div class="user-message">${userMessage}</div></div>`;
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+
+    // Show loader
+    const loader = document.getElementById('loader');
+    loader.style.display = 'block';
+
+    try {
+      const response = await fetch('/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userInput: userMessage }),
+      });
+
+      const data = await response.json();
+      let botMessage = data.response;
+      // Format bot message to display bold text for **text**
+      botMessage = botMessage.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+      // Add bot's message to chat history with avatar
+      chatHistory.innerHTML += `<div class="message"><img src="images/bot-avatar2.webp" alt="Bot Avatar" class="bot-avatar"><div class="bot-message">${botMessage}</div></div>`;
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+
+    } catch (error) {
+      console.error('Error:', error);
+      chatHistory.innerHTML += `<div class="message"><div class="bot-avatar"></div><div class="bot-message">Sorry, something went wrong. Please try again later.</div></div>`;
+    } finally {
+      loader.style.display = 'none'; // Hide loader
+    document.getElementById('chat-overlay').style.display = 'none'; // Fade back to normal background
+    isProcessing = false;
     }
+  }
 
-    form.addEventListener('submit', (event) => {
-      event.preventDefault(); // Prevent form submission
-      const loader = document.getElementById('loader');
-      loader.style.display = 'block'; // Show the loader
-      sendMessage().finally(() => {
-      loader.style.display = 'none'; // Hide the loader after the message is sent
-    });;
-    });
-  </script>
+  form.addEventListener('submit', (event) => {
+    event.preventDefault(); // Prevent form submission
+    if (userInput.value.trim() !== '') {
+      sendMessage();
+    }
+  });
+</script>
 </body>
 </html>
