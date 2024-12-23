@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-
-<title>Lorenzo - Professional Dark Theme with Avatar</title>
+<title>Lorenzo - Career AI</title>
 <style>
   body.dimmed {
     background-color: rgba(0, 0, 0, 0.6);
@@ -17,6 +16,7 @@
     min-height: 100vh;
     margin: 0;
     color: #e0e0e0;
+    flex-direction: column;
   }
 
   #chat-container {
@@ -28,13 +28,12 @@
     height: 70vh;
     min-width: 300px;
     min-height: 300px;
-    margin: 20px;
+    margin: 20px 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     resize: both;
     overflow: auto;
-    /* border: 1px solid #4CAF50; */
     position: relative;
   }
 
@@ -72,26 +71,21 @@
   }
 
   .user-message {
-    align-self: flex-end;
-    background-color: #4CAF50;
-    color: #ffffff;
+    align-self: flex-start;
+    background-color: #ffffff;
+    color: #000;
   }
 
   .bot-message {
-    align-self: flex-start;
+    align-self: flex-end;
     background-color: #333;
     color: #e0e0e0;
+    text-align: left;
+    direction: ltr;
+    padding: 20px;
+    border: 1px solid #4CAF50;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.5);
   }
-
-  .bot-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-
 
   form {
     display: flex;
@@ -141,7 +135,8 @@
     from { opacity: 0; }
     to { opacity: 1; }
   }
-#chat-container::after {
+
+  #chat-container::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -151,7 +146,8 @@
     background: linear-gradient(135deg, transparent, #4CAF50);
     cursor: se-resize;
   }
-#chat-overlay {
+
+  #chat-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -160,6 +156,40 @@
     background: rgba(0, 0, 0, 0.5);
     display: none;
     z-index: 2;
+  }
+
+  #recommendation-bubble {
+    position: relative;
+    background: #333;
+    color: #e0e0e0;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.5);
+    margin-bottom: 10px;
+    cursor: pointer;
+    align-items: center;
+  }
+
+  .recommendation-item:hover {
+    background-color: #45a049;
+    border-color: #4CAF50;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .recommendation-item {
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .recommendation-item:hover {
+    background-color: #45a049;
+    border-color: #4CAF50;
   }
 </style>
 </head>
@@ -170,33 +200,84 @@
   <h1 style="font-family: 'Poppins', sans-serif;">Lorenzo</h1>
   <h2 style="font-family: 'Poppins', sans-serif; font-size: 1em; font-weight: 300; color: #aaaaaa; text-align: center; margin: 0; padding-bottom: 20px;">AI-Career Assistant</h2>
   <div id="chat-history"></div>
+  <div id="recommendation-bubble">
+    <ul id="recommendations-list"></ul>
+  </div>
   <form id="chat-form">
     <input type="text" id="user-input" placeholder="Type your message here...">
     <button type="submit">Send</button>
   </form>
 </div>
+
+<form id="upload-form" action="/upload-pdf" method="POST" enctype="multipart/form-data">
+  <input type="file" name="pdf" accept="application/pdf" id="pdf-upload">
+  <button type="button" id="upload-button">Upload PDF</button>
+</form>
+<div id="upload-status"></div>
 <div id="loader" style="z-index: 3;">
   <img src="loader.gif" width="100px" alt="Loading...">
 </div>
+
 <script>
+ 
   const chatHistory = document.getElementById('chat-history');
   const userInput = document.getElementById('user-input');
   const form = document.getElementById('chat-form');
+  const recommendationsList = document.getElementById('recommendations-list');
+
+  const recommendations = [
+  { text: 'What are the key skills needed for career growth?', action: 'What are the key skills needed for career growth?' },
+  { text: 'How do I write an effective resume?', action: 'How do I write an effective resume?' },
+  { text: 'What certifications can boost my career prospects?', action: 'What certifications can boost my career prospects?' },
+  { text: 'How do I prepare for job interviews?', action: 'How do I prepare for job interviews?' },
+  { text: 'What programming languages are in demand across industries?', action: 'What programming languages are in demand across industries?' },
+  { text: 'How do I build a strong professional portfolio?', action: 'How do I build a strong professional portfolio?' },
+  { text: 'What are some common career paths in my field?', action: 'What are some common career paths in my field?' },
+  { text: 'How do I transition to a new career?', action: 'How do I transition to a new career?' },
+  { text: 'What online courses are best for career advancement?', action: 'What online courses are best for career advancement?' },
+  { text: 'How do I stay updated with industry trends?', action: 'How do I stay updated with industry trends?' },
+  { text: 'What are the best networking strategies for career development?', action: 'What are the best networking strategies for career development?' },
+  { text: 'How do I improve my leadership skills?', action: 'How do I improve my leadership skills?' },
+  { text: 'What are some tips for negotiating a salary?', action: 'What are some tips for negotiating a salary?' },
+  { text: 'What are the best practices for managing work-life balance?', action: 'What are the best practices for managing work-life balance?' },
+  { text: 'How do I gain relevant experience in my field?', action: 'How do I gain relevant experience in my field?' },
+  { text: 'What are the most in-demand skills in the job market today?', action: 'What are the most in-demand skills in the job market today?' },
+  { text: 'How do I handle workplace conflicts professionally?', action: 'How do I handle workplace conflicts professionally?' },
+  { text: 'What are the best ways to ask for a promotion?', action: 'What are the best ways to ask for a promotion?' },
+  { text: 'How do I set career goals and achieve them?', action: 'How do I set career goals and achieve them?' },
+  { text: 'What should I consider when choosing a career path?', action: 'What should I consider when choosing a career path?' }
+];
+
+
+  function getRandomRecommendations() {
+    const shuffled = recommendations.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 3);
+  }
+
+  function displayRecommendations() {
+    const selectedRecommendations = getRandomRecommendations();
+    recommendationsList.innerHTML = '';
+    selectedRecommendations.forEach((rec) => {
+      const li = document.createElement('li');
+      li.className = 'recommendation-item';
+      li.textContent = rec.text;
+      li.onclick = () => insertIntoChat(rec.action);
+      recommendationsList.appendChild(li);
+    });
+  }
 
   let isProcessing = false;
 
   async function sendMessage() {
     if (isProcessing) return;
     isProcessing = true;
-    document.getElementById('chat-overlay').style.display = 'block'; // Fade to darker background
-    const userMessage = userInput.value;
-    userInput.value = ''; // Clear input field
 
-    // Add user's message to chat history
+    const userMessage = userInput.value;
+    userInput.value = '';
+
     chatHistory.innerHTML += `<div class="message"><div class="user-message">${userMessage}</div></div>`;
     chatHistory.scrollTop = chatHistory.scrollHeight;
 
-    // Show loader
     const loader = document.getElementById('loader');
     loader.style.display = 'block';
 
@@ -211,29 +292,72 @@
 
       const data = await response.json();
       let botMessage = data.response;
-      // Format bot message to display bold text for **text**
-      botMessage = botMessage.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      botMessage = botMessage
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/_(.*?)_/g, '<em>$1</em>')
+        .replace(/\n/g, '<br>');
 
-      // Add bot's message to chat history with avatar
-      chatHistory.innerHTML += `<div class="message"><img src="images/bot-avatar2.webp" alt="Bot Avatar" class="bot-avatar"><div class="bot-message">${botMessage}</div></div>`;
+      chatHistory.innerHTML += `<div class="message" style="justify-content: flex-end;"><div class="bot-message">${botMessage}</div></div>`;
       chatHistory.scrollTop = chatHistory.scrollHeight;
 
     } catch (error) {
       console.error('Error:', error);
-      chatHistory.innerHTML += `<div class="message"><div class="bot-avatar"></div><div class="bot-message">Sorry, something went wrong. Please try again later.</div></div>`;
+      chatHistory.innerHTML += `<div class="message" style="justify-content: flex-end;"><div class="bot-message">Sorry, something went wrong. Please try again later.</div></div>`;
     } finally {
-      loader.style.display = 'none'; // Hide loader
-    document.getElementById('chat-overlay').style.display = 'none'; // Fade back to normal background
-    isProcessing = false;
+      loader.style.display = 'none';
+      isProcessing = false;
     }
   }
 
+  document.getElementById('upload-button').addEventListener('click', async () => {
+    const fileInput = document.getElementById('pdf-upload');
+    const statusDiv = document.getElementById('upload-status');
+
+    if (!fileInput.files.length) {
+      statusDiv.textContent = 'Please select a file to upload.';
+      statusDiv.style.color = 'red';
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('pdf', fileInput.files[0]);
+
+    statusDiv.textContent = 'Uploading...';
+    statusDiv.style.color = '#4CAF50';
+
+    try {
+      const response = await fetch('/upload-pdf', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        statusDiv.textContent = `Upload successful`;
+      } else {
+        statusDiv.textContent = result.error || 'Upload failed.';
+        statusDiv.style.color = 'red';
+      }
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      statusDiv.textContent = 'An error occurred during upload.';
+      statusDiv.style.color = 'red';
+    }
+  });
+
   form.addEventListener('submit', (event) => {
-    event.preventDefault(); // Prevent form submission
+    event.preventDefault();
+    document.getElementById('recommendation-bubble').style.display = 'none'; 
     if (userInput.value.trim() !== '') {
       sendMessage();
     }
   });
+  function insertIntoChat(message) {
+    userInput.value = message;
+    document.getElementById('recommendation-bubble').style.display = 'none'; // Hide recommendation bubble
+  }
+
+  displayRecommendations(); // Call on page load to display random recommendations
 </script>
 </body>
 </html>
