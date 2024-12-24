@@ -32,7 +32,7 @@ let historyT = [
   },
   {
     role: "user",
-    parts: [{ text: "Here's some information about Venneth, he is a 20 year old male, currently studying at BINUS University, and he has a very strong passion for technology and programming, he has a beautiful girlfriend named Ester, she is very supportive of his career"}],
+    parts: [{ text: "Here's some information about Venneth, he is a 20 year old male, currently studying at BINUS University, and he has a very strong passion for technology and programming, he has a beautiful girlfriend named Ester, she is very supportive of his career, Venneth loves her very much, she makes her happy, and he is very grateful to have her in his life."}],
   },
   {
     role: "model",
