@@ -30,6 +30,14 @@ let historyT = [
     role: "model",
     parts: [{ text: "Hi there! What career-related questions can I help you with? Venneth is my creator"}],
   },
+  {
+    role: "user",
+    parts: [{ text: "Here's some information about Venneth, he is a 20 year old male, currently studying at BINUS University, and he has a very strong passion for technology and programming, he has a beautiful girlfriend named Ester, she is very supportive of his career"}],
+  },
+  {
+    role: "model",
+    parts: [{ text: "OK! I'll be sure to remember Venneth's profile"}],
+  },
 ];
 app.use(express.json());
 
