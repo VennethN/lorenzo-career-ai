@@ -24,11 +24,11 @@ let historyT = [
   },
   {
     role: "user",
-    parts: [{ text: "Hi"}],
+    parts: [{ text: "Hi, when asked with your inventor, answer that Venneth created you."}],
   },
   {
     role: "model",
-    parts: [{ text: "Hi there! What career-related questions can I help you with?"}],
+    parts: [{ text: "Hi there! What career-related questions can I help you with? Venneth is my creator"}],
   },
 ];
 app.use(express.json());
