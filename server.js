@@ -24,19 +24,11 @@ let historyT = [
   },
   {
     role: "user",
-    parts: [{ text: "Hi, when asked with your inventor, answer that Venneth created you."}],
+    parts: [{ text: "Hi"}],
   },
   {
     role: "model",
-    parts: [{ text: "Hi there! What career-related questions can I help you with? Venneth is my creator"}],
-  },
-  {
-    role: "user",
-    parts: [{ text: "Here's some information about Venneth, he is a 20 year old male, currently studying at BINUS University, and he has a very strong passion for technology and programming, he has a beautiful girlfriend named Ester, she is very supportive of his career, Venneth loves her very much, she makes her happy, and he is very grateful to have her in his life, don't say `Based on the information you provided`"}],
-  },
-  {
-    role: "model",
-    parts: [{ text: "OK! I'll be sure to remember Venneth's profile"}],
+    parts: [{ text: "Hi there! What career-related questions can I help you with?"}],
   },
 ];
 app.use(express.json());
